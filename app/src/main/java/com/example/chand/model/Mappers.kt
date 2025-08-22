@@ -19,6 +19,7 @@ fun PriceItem.toEntity(): WatchlistItemEntity {
             time = currency.time,
             type = "currency"
         )
+
         is PriceItem.GoldItem -> WatchlistItemEntity(
             symbol = gold.symbol ?: "",
             name = gold.name,
@@ -30,6 +31,7 @@ fun PriceItem.toEntity(): WatchlistItemEntity {
             time = gold.time,
             type = "gold"
         )
+
         is PriceItem.CryptocurrencyItem -> WatchlistItemEntity(
             symbol = cryptocurrency.symbol ?: "",
             name = cryptocurrency.nameEn,
@@ -41,6 +43,8 @@ fun PriceItem.toEntity(): WatchlistItemEntity {
             time = cryptocurrency.time,
             type = "crypto"
         )
+
+        PriceItem.TomanItem -> TODO()
     }
 }
 
@@ -57,6 +61,7 @@ fun PriceItem.toConverterEntity(): ConverterPriceEntity {
             time = currency.time,
             type = "currency"
         )
+
         is PriceItem.GoldItem -> ConverterPriceEntity(
             symbol = gold.symbol ?: "",
             name = gold.name,
@@ -68,6 +73,7 @@ fun PriceItem.toConverterEntity(): ConverterPriceEntity {
             time = gold.time,
             type = "gold"
         )
+
         is PriceItem.CryptocurrencyItem -> ConverterPriceEntity(
             symbol = cryptocurrency.symbol ?: "",
             name = cryptocurrency.name,
@@ -78,6 +84,18 @@ fun PriceItem.toConverterEntity(): ConverterPriceEntity {
             date = cryptocurrency.date,
             time = cryptocurrency.time,
             type = "crypto"
+        )
+
+        is PriceItem.TomanItem -> ConverterPriceEntity(
+            symbol = "IRT",
+            name = "تومان",
+            nameEn = "Toman",
+            price = "1",
+            changePercent = 0.0,
+            unit = "IRT",
+            date = null,
+            time = null,
+            type = "toman"
         )
     }
 }
@@ -98,6 +116,7 @@ fun ConverterPriceEntity.toPriceItem(): PriceItem {
                 changeValue = null
             )
         )
+
         "gold" -> PriceItem.GoldItem(
             Response_Currency_Price.Gold(
                 symbol = symbol,
@@ -112,6 +131,7 @@ fun ConverterPriceEntity.toPriceItem(): PriceItem {
                 changeValue = null
             )
         )
+
         "crypto" -> PriceItem.CryptocurrencyItem(
             Response_Currency_Price.Cryptocurrency(
                 symbol = symbol,
@@ -127,6 +147,9 @@ fun ConverterPriceEntity.toPriceItem(): PriceItem {
                 marketCap = null
             )
         )
+
+        "toman" -> PriceItem.TomanItem
+
         else -> throw IllegalArgumentException("Unknown type: $type")
     }
 }
@@ -147,6 +170,7 @@ fun WatchlistItemEntity.toPriceItem(): PriceItem {
                 changeValue = null
             )
         )
+
         "gold" -> PriceItem.GoldItem(
             Gold(
                 symbol = symbol,
@@ -161,6 +185,7 @@ fun WatchlistItemEntity.toPriceItem(): PriceItem {
                 changeValue = null
             )
         )
+
         "crypto" -> PriceItem.CryptocurrencyItem(
             Cryptocurrency(
                 symbol = symbol,
@@ -176,6 +201,7 @@ fun WatchlistItemEntity.toPriceItem(): PriceItem {
                 marketCap = null
             )
         )
+
         else -> throw IllegalArgumentException("Unknown type: $type")
     }
 }

@@ -74,6 +74,7 @@ class ConverterFragment : Fragment() {
                             itBody.currency?.filterNotNull()?.forEach { add(PriceItem.CurrencyItem(it)) }
                             itBody.gold?.filterNotNull()?.forEach { add(PriceItem.GoldItem(it)) }
                             itBody.cryptocurrency?.filterNotNull()?.forEach { add(PriceItem.CryptocurrencyItem(it)) }
+                            add(PriceItem.TomanItem)
                         }
 
                         // ذخیره در دیتابیس برای آفلاین
@@ -105,6 +106,11 @@ class ConverterFragment : Fragment() {
             val converterPrices = ChandDatabase.getDatabase(requireContext()).dao().getAllConverterPrices()
             priceItems = converterPrices.map { it.toPriceItem() }
 
+            // مطمئن شو که تومن در لیست باشه (در صورتی که در دیتابیس نیست)
+            if (priceItems.none { it is PriceItem.TomanItem }) {
+                priceItems = priceItems + PriceItem.TomanItem
+            }
+
             if (priceItems.isNotEmpty()) {
                 updateSpinners()
                 android.widget.Toast.makeText(
@@ -123,7 +129,7 @@ class ConverterFragment : Fragment() {
     }
 
     private fun updateSpinners() {
-        val currencyNames = priceItems.map { it.nameEn ?: it.name ?: it.symbol ?: "Unknown" }
+        val currencyNames = priceItems.map { it.name ?: it.nameEn ?: it.symbol ?: "Unknown" }
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
@@ -174,10 +180,10 @@ class ConverterFragment : Fragment() {
         val toCurrencyName = binding.toCurrencySpinner.selectedItem.toString()
 
         val fromPriceItem = priceItems.find {
-            (it.nameEn ?: it.name ?: it.symbol) == fromCurrencyName
+            (it.name ?: it.nameEn ?: it.symbol) == fromCurrencyName
         }
         val toPriceItem = priceItems.find {
-            (it.nameEn ?: it.name ?: it.symbol) == toCurrencyName
+            (it.name ?: it.nameEn ?: it.symbol) == toCurrencyName
         }
 
         if (fromPriceItem != null && toPriceItem != null) {

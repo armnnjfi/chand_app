@@ -42,4 +42,16 @@ sealed class PriceItem {
         override val date: String? get() = cryptocurrency.date
         override val time: String? get() = cryptocurrency.time
     }
+
+    // اضافه کردن تومن به‌عنوان یک ارز ثابت
+    object TomanItem : PriceItem() {
+        override val symbol: String = "IRT"
+        override val name: String = "تومان"
+        override val nameEn: String = "Toman"
+        override val price: String = "1" // قیمت تومن همیشه ۱ه چون API به تومنه
+        override val changePercent: Double? = 0.0
+        override val unit: String = "IRT"
+        override val date: String? = null
+        override val time: String? = null
+    }
 }
