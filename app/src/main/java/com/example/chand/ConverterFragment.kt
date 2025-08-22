@@ -1,0 +1,179 @@
+package com.example.chand
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.example.chand.databinding.FragmentConverterBinding
+import com.example.chand.model.PriceItem
+import com.example.chand.model.Response_Currency_Price
+import com.example.chand.server.ApiClient
+import com.example.chand.server.ApiServices
+import com.example.chand.DataBase.ChandDatabase
+import com.example.chand.ViewModel.WatchlistRepository
+import com.example.chand.ViewModel.WatchlistViewModel
+import com.example.chand.ViewModel.WatchlistViewModelFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class ConverterFragment : Fragment() {
+
+    private lateinit var binding: FragmentConverterBinding
+    private val viewModel: WatchlistViewModel by activityViewModels {
+        WatchlistViewModelFactory(
+            WatchlistRepository(ChandDatabase.getDatabase(requireContext()).dao())
+        )
+    }
+    private val api by lazy { ApiClient().getClient().create<ApiServices>(ApiServices::class.java) }
+    private var priceItems: List<PriceItem> = emptyList()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentConverterBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // تنظیم بازگشت
+        binding.arrowBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+        // تنظیم دکمه Swap
+        binding.swapButton.setOnClickListener {
+            swapCurrencies()
+        }
+
+        // لود داده‌های API برای پر کردن Spinnerها
+        loadCurrencyData()
+
+        // تنظیم listener برای ورودی‌ها
+        setupConversionListeners()
+    }
+
+    private fun loadCurrencyData() {
+        val callApi = api.getCurrencyPrice("FreejCpsMTnCQC5VM5mod6U35aNqCq5c")
+        callApi.enqueue(object : Callback<Response_Currency_Price> {
+            override fun onResponse(
+                call: Call<Response_Currency_Price?>,
+                response: Response<Response_Currency_Price?>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { itBody ->
+                        priceItems = mutableListOf<PriceItem>().apply {
+                            itBody.currency?.filterNotNull()?.forEach { add(PriceItem.CurrencyItem(it)) }
+                            itBody.gold?.filterNotNull()?.forEach { add(PriceItem.GoldItem(it)) }
+                            itBody.cryptocurrency?.filterNotNull()?.forEach { add(PriceItem.CryptocurrencyItem(it)) }
+                        }
+
+                        // ذخیره در دیتابیس
+                        viewModel.savePrices(priceItems)
+
+                        setupSpinners(priceItems)
+                    }
+                } else {
+                    loadFromDatabase() // وقتی API جواب نداد
+                }
+            }
+
+            override fun onFailure(call: Call<Response_Currency_Price?>, t: Throwable) {
+                loadFromDatabase() // وقتی اینترنت قطع بود
+            }
+        })
+    }
+
+    private fun loadFromDatabase() {
+        viewModel.getSavedPrices().observe(viewLifecycleOwner) { savedPrices ->
+            if (!savedPrices.isNullOrEmpty()) {
+                priceItems = savedPrices
+                setupSpinners(priceItems)
+            }
+        }
+    }
+
+    private fun setupSpinners(priceItems: List<PriceItem>) {
+        val currencyNames = priceItems.map { it.nameEn ?: it.name ?: it.symbol ?: "Unknown" }
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            currencyNames
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        binding.fromCurrencySpinner.adapter = adapter
+        binding.toCurrencySpinner.adapter = adapter
+    }
+
+    private fun setupConversionListeners() {
+        // وقتی مقدار مبدا تغییر می‌کنه
+        binding.fromAmount.addTextChangedListener { text ->
+            convertCurrency()
+        }
+
+        // وقتی ارز مبدا یا مقصد تغییر می‌کنه
+        binding.fromCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                convertCurrency()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+        binding.toCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                convertCurrency()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+    }
+
+    private fun swapCurrencies() {
+        // گرفتن ایندکس‌های فعلی Spinnerها
+        val fromIndex = binding.fromCurrencySpinner.selectedItemPosition
+        val toIndex = binding.toCurrencySpinner.selectedItemPosition
+
+        // جابه‌جایی ارزها
+        binding.fromCurrencySpinner.setSelection(toIndex)
+        binding.toCurrencySpinner.setSelection(fromIndex)
+
+        // به‌روزرسانی مقدار تبدیل‌شده
+        convertCurrency()
+    }
+
+    private fun convertCurrency() {
+        val fromAmountText = binding.fromAmount.text.toString()
+        if (fromAmountText.isBlank()) {
+            binding.toAmount.setText("")
+            return
+        }
+
+        val fromAmount = fromAmountText.toDoubleOrNull() ?: return
+        val fromCurrencyName = binding.fromCurrencySpinner.selectedItem.toString()
+        val toCurrencyName = binding.toCurrencySpinner.selectedItem.toString()
+
+        val fromPriceItem = priceItems.find {
+            (it.nameEn ?: it.name ?: it.symbol) == fromCurrencyName
+        }
+        val toPriceItem = priceItems.find {
+            (it.nameEn ?: it.name ?: it.symbol) == toCurrencyName
+        }
+
+        if (fromPriceItem != null && toPriceItem != null) {
+            val fromPrice = fromPriceItem.price?.toDoubleOrNull() ?: 1.0
+            val toPrice = toPriceItem.price?.toDoubleOrNull() ?: 1.0
+            //محاسبه مقدار
+            val convertedAmount = (fromAmount * fromPrice) / toPrice
+            binding.toAmount.setText(String.format("%.2f", convertedAmount))
+        } else {
+            binding.toAmount.setText("")
+        }
+    }
+}

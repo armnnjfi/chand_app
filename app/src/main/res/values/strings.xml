@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">chand</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="alerts">alert fragment</string>
+    <string name="converter">Currency Converter</string>
+    <string name="search_box_hint">Search Currencies</string>
+    <string name="swap">SWAP</string>
+</resources>

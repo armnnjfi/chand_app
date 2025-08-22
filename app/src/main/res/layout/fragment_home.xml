@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blackBlue"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HomeFragment">
+
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:id="@+id/settingIcon"
+        android:layout_margin="15dp"
+        android:backgroundTint="@color/white"
+        android:background="@drawable/setting_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+    <TextView
+        android:id="@+id/mainTitle"
+        app:layout_constraintTop_toTopOf="@+id/settingIcon"
+        app:layout_constraintStart_toEndOf="@+id/settingIcon"
+        app:layout_constraintEnd_toStartOf="@+id/searchIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="Real-time Currency Prices"
+        android:textColor="@color/white"
+        />
+
+    <ImageView
+        android:layout_marginEnd="15dp"
+        android:id="@+id/searchIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/search_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/settingIcon" />
+    <TextView
+        android:id="@+id/myWatchListText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Watchlist"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/mainTitle"
+        android:layout_margin="15dp"
+        app:layout_constraintStart_toStartOf="@+id/settingIcon"/>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/myWatchListText"
+            android:layout_marginTop="15dp"
+            />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addNewCurrencyBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:text="Add New Currency"
+        android:textColor="@color/blackBlue"
+        app:backgroundTint="@color/skyBlue"
+        app:cornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
