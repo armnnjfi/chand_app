@@ -9,15 +9,19 @@ import android.widget.ArrayAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.chand.databinding.FragmentConverterBinding
 import com.example.chand.model.PriceItem
 import com.example.chand.model.Response_Currency_Price
 import com.example.chand.server.ApiClient
 import com.example.chand.server.ApiServices
 import com.example.chand.DataBase.ChandDatabase
+import com.example.chand.DataBase.toConverterEntity
+import com.example.chand.DataBase.toPriceItem
 import com.example.chand.ViewModel.WatchlistRepository
 import com.example.chand.ViewModel.WatchlistViewModel
 import com.example.chand.ViewModel.WatchlistViewModelFactory
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -44,20 +48,16 @@ class ConverterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // تنظیم بازگشت
         binding.arrowBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        // تنظیم دکمه Swap
         binding.swapButton.setOnClickListener {
             swapCurrencies()
         }
 
-        // لود داده‌های API برای پر کردن Spinnerها
         loadCurrencyData()
 
-        // تنظیم listener برای ورودی‌ها
         setupConversionListeners()
     }
 
@@ -76,32 +76,53 @@ class ConverterFragment : Fragment() {
                             itBody.cryptocurrency?.filterNotNull()?.forEach { add(PriceItem.CryptocurrencyItem(it)) }
                         }
 
-                        // ذخیره در دیتابیس
-                        viewModel.savePrices(priceItems)
+                        // ذخیره در دیتابیس برای آفلاین
+                        lifecycleScope.launch {
+                            val converterEntities = priceItems.map { it.toConverterEntity() }
+                            ChandDatabase.getDatabase(requireContext()).dao().insertConverterPrices(converterEntities)
+                        }
 
-                        setupSpinners(priceItems)
+                        updateSpinners()
                     }
                 } else {
-                    loadFromDatabase() // وقتی API جواب نداد
+                    loadOfflineData()
                 }
             }
 
             override fun onFailure(call: Call<Response_Currency_Price?>, t: Throwable) {
-                loadFromDatabase() // وقتی اینترنت قطع بود
+                loadOfflineData()
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    "خطا در لود داده‌ها: ${t.message} - استفاده از داده‌های آفلاین",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
 
-    private fun loadFromDatabase() {
-        viewModel.getSavedPrices().observe(viewLifecycleOwner) { savedPrices ->
-            if (!savedPrices.isNullOrEmpty()) {
-                priceItems = savedPrices
-                setupSpinners(priceItems)
+    private fun loadOfflineData() {
+        lifecycleScope.launch {
+            val converterPrices = ChandDatabase.getDatabase(requireContext()).dao().getAllConverterPrices()
+            priceItems = converterPrices.map { it.toPriceItem() }
+
+            if (priceItems.isNotEmpty()) {
+                updateSpinners()
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    "داده‌های آفلاین لود شد",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    "هیچ داده آفلاینی موجود نیست",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    private fun setupSpinners(priceItems: List<PriceItem>) {
+    private fun updateSpinners() {
         val currencyNames = priceItems.map { it.nameEn ?: it.name ?: it.symbol ?: "Unknown" }
         val adapter = ArrayAdapter(
             requireContext(),
@@ -115,12 +136,10 @@ class ConverterFragment : Fragment() {
     }
 
     private fun setupConversionListeners() {
-        // وقتی مقدار مبدا تغییر می‌کنه
         binding.fromAmount.addTextChangedListener { text ->
             convertCurrency()
         }
 
-        // وقتی ارز مبدا یا مقصد تغییر می‌کنه
         binding.fromCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 convertCurrency()
@@ -136,15 +155,10 @@ class ConverterFragment : Fragment() {
     }
 
     private fun swapCurrencies() {
-        // گرفتن ایندکس‌های فعلی Spinnerها
         val fromIndex = binding.fromCurrencySpinner.selectedItemPosition
         val toIndex = binding.toCurrencySpinner.selectedItemPosition
-
-        // جابه‌جایی ارزها
         binding.fromCurrencySpinner.setSelection(toIndex)
         binding.toCurrencySpinner.setSelection(fromIndex)
-
-        // به‌روزرسانی مقدار تبدیل‌شده
         convertCurrency()
     }
 
@@ -169,7 +183,6 @@ class ConverterFragment : Fragment() {
         if (fromPriceItem != null && toPriceItem != null) {
             val fromPrice = fromPriceItem.price?.toDoubleOrNull() ?: 1.0
             val toPrice = toPriceItem.price?.toDoubleOrNull() ?: 1.0
-            //محاسبه مقدار
             val convertedAmount = (fromAmount * fromPrice) / toPrice
             binding.toAmount.setText(String.format("%.2f", convertedAmount))
         } else {

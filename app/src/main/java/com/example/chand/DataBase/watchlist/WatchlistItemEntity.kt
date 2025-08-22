@@ -1,11 +1,11 @@
-package com.example.chand.DataBase
+package com.example.chand.DataBase.watchlist
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.retrofit_exersice.utils.Constants
 
-@Entity(tableName = "converter")
-data class ConverterEntity(
+@Entity(tableName = Constants.TABLE_NAME)
+data class WatchlistItemEntity(
     @PrimaryKey val symbol: String,
     val name: String?,
     val nameEn: String?,

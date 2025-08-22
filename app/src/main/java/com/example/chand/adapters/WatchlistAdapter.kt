@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.chand.DataBase.WatchlistItemEntity
+import com.example.chand.DataBase.watchlist.WatchlistItemEntity
 import com.example.chand.databinding.ItemWatchlistBinding
 
 class WatchlistAdapter(

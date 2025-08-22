@@ -4,15 +4,36 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.chand.DataBase.watchlist.WatchlistItemEntity
 import com.example.retrofit_exersice.utils.Constants
 
-@Database(entities = [WatchlistItemEntity::class], version = 1) // نسخه را به ۲ افزایش دهید
-abstract class ChandDatabase: RoomDatabase(){
-    abstract fun dao() : WatchlistDao
+@Database(entities = [WatchlistItemEntity::class, ConverterPriceEntity::class], version = 2)
+abstract class ChandDatabase : RoomDatabase() {
+    abstract fun dao(): CurrencyDao
 
     companion object {
         @Volatile
         private var INSTANCE: ChandDatabase? = null
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                CREATE TABLE converter_prices (
+                    symbol TEXT PRIMARY KEY NOT NULL,
+                    name TEXT,
+                    nameEn TEXT,
+                    price TEXT,
+                    changePercent REAL,
+                    unit TEXT,
+                    date TEXT,
+                    time TEXT,
+                    type TEXT NOT NULL
+                )
+            """)
+            }
+        }
 
         fun getDatabase(context: Context): ChandDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -22,7 +43,7 @@ abstract class ChandDatabase: RoomDatabase(){
                     Constants.DB_NAME
                 )
                     .allowMainThreadQueries()
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_1_2)
                     .build()
                 INSTANCE = instance
                 instance

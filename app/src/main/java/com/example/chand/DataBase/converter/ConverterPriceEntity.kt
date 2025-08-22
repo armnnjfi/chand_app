@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.retrofit_exersice.utils.Constants
 
-@Entity(tableName = "watchlist")
-data class WatchlistItemEntity(
+@Entity(tableName = Constants.TABLE_CONVERTER)
+data class ConverterPriceEntity(
     @PrimaryKey val symbol: String,
     val name: String?,
     val nameEn: String?,
@@ -14,5 +14,5 @@ data class WatchlistItemEntity(
     val unit: String?,
     val date: String?,
     val time: String?,
-    val type: String   // "currency", "gold", "crypto"
+    val type: String // "currency", "gold", "crypto"
 )

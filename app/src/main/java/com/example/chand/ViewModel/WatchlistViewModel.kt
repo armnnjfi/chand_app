@@ -1,12 +1,11 @@
-
 package com.example.chand.ViewModel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chand.DataBase.WatchlistItemEntity
 import com.example.chand.DataBase.toEntity
+import com.example.chand.DataBase.watchlist.WatchlistItemEntity
 import com.example.chand.model.PriceItem
 import com.example.chand.model.Response_Currency_Price
 import com.example.chand.server.ApiClient
@@ -32,15 +31,6 @@ class WatchlistViewModel(private val repository: WatchlistRepository) : ViewMode
         viewModelScope.launch {
             repository.delete(item)
         }
-    }
-    fun savePrices(prices: List<PriceItem>) {
-        viewModelScope.launch {
-            repository.insertAll(prices) // باید در Repository تابع insertAll بسازی
-        }
-    }
-
-    fun getSavedPrices(): LiveData<List<PriceItem>> {
-        return repository.getAllPrices()
     }
 
     fun updateWatchlistPrices() {
@@ -79,7 +69,7 @@ class WatchlistViewModel(private val repository: WatchlistRepository) : ViewMode
                 }
 
                 override fun onFailure(call: Call<Response_Currency_Price?>, t: Throwable) {
-                    Log.e("onFailure","api Failure")
+                    Log.e("onFailure", "api Failure")
                 }
             })
         }
