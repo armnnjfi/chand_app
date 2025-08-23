@@ -7,5 +7,5 @@
         android:angle="135"
         android:type="radial" />
 
-    <corners android:radius="5dp" />
+    <corners android:radius="3dp" />
 </shape>

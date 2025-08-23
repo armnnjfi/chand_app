@@ -9,13 +9,27 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.chand.DataBase.watchlist.WatchlistItemEntity
 import com.example.retrofit_exersice.utils.Constants
 
-@Database(entities = [WatchlistItemEntity::class, ConverterPriceEntity::class], version = 2)
+@Database(entities = [WatchlistItemEntity::class, ConverterPriceEntity::class, AlertEntity::class], version = 3)
 abstract class ChandDatabase : RoomDatabase() {
     abstract fun dao(): CurrencyDao
 
     companion object {
         @Volatile
         private var INSTANCE: ChandDatabase? = null
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE alerts (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        symbol TEXT NOT NULL,
+                        upperLimit REAL NOT NULL,
+                        lowerLimit REAL NOT NULL,
+                        isActive INTEGER NOT NULL DEFAULT 1
+                    )
+                """)
+            }
+        }
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
@@ -43,7 +57,7 @@ abstract class ChandDatabase : RoomDatabase() {
                     Constants.DB_NAME
                 )
                     .allowMainThreadQueries()
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2,MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
                 instance

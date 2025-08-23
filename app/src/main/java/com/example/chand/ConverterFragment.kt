@@ -22,6 +22,7 @@ import com.example.chand.DataBase.toPriceItem
 import com.example.chand.ViewModel.WatchlistRepository
 import com.example.chand.ViewModel.WatchlistViewModel
 import com.example.chand.ViewModel.WatchlistViewModelFactory
+import com.example.retrofit_exersice.utils.Constants
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -70,13 +71,13 @@ class ConverterFragment : Fragment() {
     }
 
     private fun loadCurrencyData() {
-        val callApi = api.getCurrencyPrice("FreejCpsMTnCQC5VM5mod6U35aNqCq5c")
+        val callApi = api.getCurrencyPrice(Constants.API_KEY)
         callApi.enqueue(object : Callback<Response_Currency_Price> {
             override fun onResponse(
                 call: Call<Response_Currency_Price?>,
                 response: Response<Response_Currency_Price?>
             ) {
-                if (!isAdded) return   // اگر Fragment attach نبود کاری نکن
+                if (!isAdded) return
 
                 if (response.isSuccessful) {
                     response.body()?.let { itBody ->
@@ -87,7 +88,7 @@ class ConverterFragment : Fragment() {
                             add(PriceItem.TomanItem)
                         }
 
-                        // ذخیره در دیتابیس برای آفلاین
+                        // save in database for offline mode
                         lifecycleScope.launch {
                             val converterEntities = priceItems.map { it.toConverterEntity() }
                             ChandDatabase.getDatabase(requireContext()).dao()

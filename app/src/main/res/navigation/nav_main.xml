@@ -24,7 +24,13 @@
         android:id="@+id/alertsFragment"
         android:name="com.example.chand.AlertsFragment"
         android:label="fragment_alerts"
-        tools:layout="@layout/fragment_alerts" />
+        tools:layout="@layout/fragment_alerts" >
+        <action
+            android:id="@+id/action_alertsFragment_to_addAlertFragment"
+            app:destination="@id/addAlertFragment"
+            app:popUpTo="@id/alertsFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/converterFragment"
         android:name="com.example.chand.ConverterFragment"
@@ -35,4 +41,8 @@
         android:name="com.example.chand.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/addAlertFragment"
+        android:name="com.example.chand.AddAlertFragment"
+        android:label="AddAlertFragment" />
 </navigation>

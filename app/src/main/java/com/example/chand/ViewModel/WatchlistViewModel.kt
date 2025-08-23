@@ -10,6 +10,7 @@ import com.example.chand.model.PriceItem
 import com.example.chand.model.Response_Currency_Price
 import com.example.chand.server.ApiClient
 import com.example.chand.server.ApiServices
+import com.example.retrofit_exersice.utils.Constants
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,7 +36,7 @@ class WatchlistViewModel(private val repository: WatchlistRepository) : ViewMode
 
     fun updateWatchlistPrices() {
         viewModelScope.launch {
-            val callApi = api.getCurrencyPrice("FreejCpsMTnCQC5VM5mod6U35aNqCq5c")
+            val callApi = api.getCurrencyPrice(Constants.API_KEY)
             callApi.enqueue(object : Callback<Response_Currency_Price> {
                 override fun onResponse(
                     call: Call<Response_Currency_Price?>,
@@ -74,4 +75,5 @@ class WatchlistViewModel(private val repository: WatchlistRepository) : ViewMode
             })
         }
     }
+
 }

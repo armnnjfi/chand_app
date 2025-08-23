@@ -22,6 +22,7 @@ import com.example.chand.ViewModel.WatchlistRepository
 import com.example.chand.ViewModel.WatchlistViewModel
 import com.example.chand.ViewModel.WatchlistViewModelFactory
 import com.example.chand.DataBase.toEntity
+import com.example.retrofit_exersice.utils.Constants
 
 class BottomSheetCurrencyListFragment : BottomSheetDialogFragment() {
 
@@ -58,7 +59,7 @@ class BottomSheetCurrencyListFragment : BottomSheetDialogFragment() {
 
 
         binding.apply {
-            val callApi = api.getCurrencyPrice("FreejCpsMTnCQC5VM5mod6U35aNqCq5c")
+            val callApi = api.getCurrencyPrice(Constants.API_KEY)
             callApi.enqueue(object : Callback<Response_Currency_Price> {
                 override fun onResponse(
                     call: Call<Response_Currency_Price?>,
