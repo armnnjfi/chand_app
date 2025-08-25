@@ -55,7 +55,7 @@ abstract class ChandDatabase : RoomDatabase() {
                     context.applicationContext,
                     ChandDatabase::class.java,
                     Constants.DB_NAME
-                )
+                ).fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
                     .addMigrations(MIGRATION_1_2,MIGRATION_2_3)
                     .build()

@@ -19,9 +19,9 @@ import com.example.chand.server.ApiServices
 import com.example.chand.DataBase.ChandDatabase
 import com.example.chand.DataBase.toConverterEntity
 import com.example.chand.DataBase.toPriceItem
-import com.example.chand.ViewModel.WatchlistRepository
-import com.example.chand.ViewModel.WatchlistViewModel
-import com.example.chand.ViewModel.WatchlistViewModelFactory
+import com.example.chand.ViewModel.watchlist.WatchlistRepository
+import com.example.chand.ViewModel.watchlist.WatchlistViewModel
+import com.example.chand.ViewModel.watchlist.WatchlistViewModelFactory
 import com.example.retrofit_exersice.utils.Constants
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -147,7 +147,7 @@ class ConverterFragment : Fragment() {
         val currencyNames = priceItems.map { it.name ?: it.nameEn ?: it.symbol ?: "Unknown" }
         val adapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.item_spinner_converter,
             currencyNames
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

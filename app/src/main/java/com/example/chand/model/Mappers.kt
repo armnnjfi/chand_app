@@ -205,3 +205,20 @@ fun WatchlistItemEntity.toPriceItem(): PriceItem {
         else -> throw IllegalArgumentException("Unknown type: $type")
     }
 }
+
+fun AlertEntity.toPriceItem(): PriceItem {
+    return PriceItem.CurrencyItem(
+        Currency(
+            symbol = this.symbol,
+            name = null,
+            nameEn = null,
+            price = null,
+            changePercent = null,
+            unit = null,
+            date = null,
+            time = null,
+            timeUnix = null,
+            changeValue = null
+        )
+    )
+}

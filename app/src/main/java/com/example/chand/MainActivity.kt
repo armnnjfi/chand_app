@@ -25,8 +25,6 @@ class MainActivity : AppCompatActivity() {
     //other
     private lateinit var navController: NavController
 //    private lateinit var appActionBar: ActionBar
-
-    private val api by lazy { ApiClient().getClient().create<ApiServices>(ApiServices::class.java) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

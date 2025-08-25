@@ -6,33 +6,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.activityViewModels
 import com.example.chand.DataBase.AlertEntity
 import com.example.chand.DataBase.ChandDatabase
 import com.example.chand.DataBase.toPriceItem
-import com.example.chand.ViewModel.WatchlistRepository
-import com.example.chand.ViewModel.WatchlistViewModel
-import com.example.chand.ViewModel.WatchlistViewModelFactory
+import com.example.chand.ViewModel.alerts.AlertsRepository
+import com.example.chand.ViewModel.alerts.AlertsViewModel
+import com.example.chand.ViewModel.alerts.AlertsViewModelFactory
 import com.example.chand.databinding.FragmentAddAlertBinding
-import com.example.chand.model.PriceItem
 import com.example.chand.server.ApiClient
 import com.example.chand.server.ApiServices
+import com.example.retrofit_exersice.utils.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.util.Log
 
 class AddAlertFragment : Fragment() {
 
     private var _binding: FragmentAddAlertBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: WatchlistViewModel by activityViewModels {
-        WatchlistViewModelFactory(
-            WatchlistRepository(ChandDatabase.getDatabase(requireContext()).dao())
+    private val viewModel: AlertsViewModel by activityViewModels {
+        AlertsViewModelFactory(
+            AlertsRepository(ChandDatabase.getDatabase(requireActivity().application).dao())
         )
     }
     private val api by lazy { ApiClient().getClient().create<ApiServices>(ApiServices::class.java) }
@@ -44,28 +46,41 @@ class AddAlertFragment : Fragment() {
         _binding = FragmentAddAlertBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // لود داده‌ها از ViewModel
-        viewModel.updateWatchlistPrices() // مطمئن می‌شیم داده‌ها به‌روز باشن
-        val priceItems = viewModel.allItems.value?.map { it.toPriceItem() } ?: emptyList()
-
-        // پر کردن اسپینر با نمادها از API
-        val symbols = priceItems.mapNotNull { it.symbol }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, symbols)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.symbolSpinner.adapter = adapter
+        // لود داده‌ها از ViewModel با observe
+        viewModel.updateAlertsPrices()
+        viewModel.allItems.observe(viewLifecycleOwner) { alerts ->
+            Log.d("AddAlertFragment", "Alerts size: ${alerts.size}")
+            val priceItems = alerts.map { it.toPriceItem() }
+            val symbols = priceItems.mapNotNull { it.symbol }
+            val adapter =
+                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, symbols)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.symbolSpinner.adapter = adapter
+        }
 
         // تنظیم دکمه ذخیره
-        binding.saveButton.setOnClickListener {
-            val symbol = binding.symbolSpinner.selectedItem.toString()
-            val upperLimit = binding.upperLimitEdit.text.toString().toDoubleOrNull() ?: 0.0
-            val lowerLimit = binding.lowerLimitEdit.text.toString().toDoubleOrNull() ?: 0.0
+        binding.apply {
+            saveButton.setOnClickListener {
+                val selectedSymbol = symbolSpinner.selectedItem
+                val symbol = if (selectedSymbol != null) selectedSymbol.toString() else {
+                    Toast.makeText(requireContext(), "Please select a symbol", Toast.LENGTH_SHORT)
+                        .show()
+                    return@setOnClickListener
+                }
+                val upperLimit = upperLimitEdit.text.toString().toDoubleOrNull() ?: 0.0
+                val lowerLimit = lowerLimitEdit.text.toString().toDoubleOrNull() ?: 0.0
 
-            val alert = AlertEntity(symbol = symbol, upperLimit = upperLimit, lowerLimit = lowerLimit)
-            CoroutineScope(Dispatchers.IO).launch {
-                ChandDatabase.getDatabase(requireContext()).dao().insertAlert(alert)
-                checkPriceAlerts()
+                val alert = AlertEntity(
+                    symbol = symbol,
+                    upperLimit = upperLimit,
+                    lowerLimit = lowerLimit
+                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    ChandDatabase.getDatabase(requireContext()).dao().insertAlert(alert)
+                    checkPriceAlerts()
+                }
+                requireActivity().onBackPressed()
             }
-            requireActivity().onBackPressed()
         }
 
         return view
@@ -73,28 +88,36 @@ class AddAlertFragment : Fragment() {
 
     private fun checkPriceAlerts() {
         CoroutineScope(Dispatchers.IO).launch {
-            val callApi = api.getCurrencyPrice("FreejCpsMTnCQC5VM5mod6U35aNqCq5c")
+            val callApi = api.getCurrencyPrice(Constants.API_KEY)
             callApi.enqueue(object : Callback<com.example.chand.model.Response_Currency_Price> {
                 override fun onResponse(
                     call: Call<com.example.chand.model.Response_Currency_Price>,
                     response: Response<com.example.chand.model.Response_Currency_Price>
                 ) {
+                    if (!isAdded) {
+                        return
+                    }
                     if (response.isSuccessful) {
                         response.body()?.let { priceResponse ->
-                            val alerts = ChandDatabase.getDatabase(requireContext()).dao().getAllAlerts().value
+                            val alerts = ChandDatabase.getDatabase(requireContext()).dao()
+                                .getAllAlerts().value
                             alerts?.forEach { alert ->
-                                priceResponse.currency?.find { it?.symbol == alert.symbol }?.let { currency ->
-                                    val price = currency.price?.toDoubleOrNull() ?: 0.0
-                                    if (price >= alert.upperLimit || price <= alert.lowerLimit) {
-                                        sendNotification(alert.symbol, price)
+                                priceResponse.currency?.find { it?.symbol == alert.symbol }
+                                    ?.let { currency ->
+                                        val price = currency.price?.toDoubleOrNull() ?: 0.0
+                                        if (price >= alert.upperLimit || price <= alert.lowerLimit) {
+                                            sendNotification(alert.symbol, price)
+                                        }
                                     }
-                                }
                             }
                         }
                     }
                 }
 
-                override fun onFailure(call: Call<com.example.chand.model.Response_Currency_Price>, t: Throwable) {
+                override fun onFailure(
+                    call: Call<com.example.chand.model.Response_Currency_Price>,
+                    t: Throwable
+                ) {
                     // مدیریت خطا
                 }
             })

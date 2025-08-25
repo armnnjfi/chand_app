@@ -1,24 +1,35 @@
 package com.example.chand
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.chand.DataBase.AlertEntity
 import com.example.chand.DataBase.ChandDatabase
+import com.example.chand.ViewModel.alerts.AlertsRepository
+import com.example.chand.ViewModel.alerts.AlertsViewModel
+import com.example.chand.ViewModel.alerts.AlertsViewModelFactory
 import com.example.chand.databinding.FragmentAlertsBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AlertsFragment : Fragment() {
 
     private lateinit var binding: FragmentAlertsBinding
-    private lateinit var adapter: AlertsAdapter
+
+    // ViewModel
+    private val viewModel: AlertsViewModel by activityViewModels {
+        AlertsViewModelFactory(
+            AlertsRepository(ChandDatabase.getDatabase(requireContext()).dao())
+        )
+    }
+
+    private val adapter by lazy {
+        AlertsAdapter { item ->
+            viewModel.removeFromAlertList(item.id)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,21 +53,16 @@ class AlertsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = AlertsAdapter { alert, isChecked ->
-            CoroutineScope(Dispatchers.IO).launch {
-                ChandDatabase.getDatabase(requireContext()).dao().updateAlertStatus(alert.id, isChecked)
-            }
-        }
         binding.alertsRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.alertsRecyclerView.adapter = adapter
     }
 
     private fun loadAlerts() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val alerts = ChandDatabase.getDatabase(requireContext()).dao().getAllAlerts().value
-            withContext(Dispatchers.Main) {
-                alerts?.let { adapter.submitList(it) }
+        ChandDatabase.getDatabase(requireContext())
+            .dao()
+            .getAllAlerts()
+            .observe(viewLifecycleOwner) { alerts ->
+                adapter.differ.submitList(alerts)
             }
-        }
     }
 }

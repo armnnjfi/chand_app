@@ -74,7 +74,7 @@ dependencies {
     implementation(libs.room.runtime)    // room-runtime
     ksp(libs.room.compiler)              // room-compiler
 
-//    // annotation (برای رفع خطای annotation:1.3.0)
-//    implementation ("androidx.annotation:annotation:1.9.1")
+    // Work Manager
+    implementation (libs.androidx.work.runtime.ktx)
 
 }

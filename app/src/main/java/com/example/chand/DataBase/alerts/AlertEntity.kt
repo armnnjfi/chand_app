@@ -9,5 +9,5 @@ data class AlertEntity(
     val symbol: String, // نماد ارز (مثل USD, EUR)
     val upperLimit: Double, // سقف قیمت
     val lowerLimit: Double, // کف قیمت
-    val isActive: Boolean = true // وضعیت فعال/غیرفعال
+    val isActive: Boolean = true  // وضعیت فعال/غیرفعال
 )

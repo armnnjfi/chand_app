@@ -35,12 +35,12 @@ interface CurrencyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlert(alert: AlertEntity)
 
-    @Query("SELECT * FROM alerts")
+    @Query("SELECT * FROM ${Constants.TABLE_ALERT}")
     fun getAllAlerts(): LiveData<List<AlertEntity>>
 
-    @Query("UPDATE alerts SET isActive = :isActive WHERE id = :id")
+    @Query("UPDATE ${Constants.TABLE_ALERT} SET isActive = :isActive WHERE id = :id")
     suspend fun updateAlertStatus(id: Int, isActive: Boolean)
 
-    @Delete
-    suspend fun deleteAlert(alert: AlertEntity)
+    @Query("Delete From ${Constants.TABLE_ALERT} WHERE id = :id")
+    suspend fun deleteAlert(id: Int)
 }

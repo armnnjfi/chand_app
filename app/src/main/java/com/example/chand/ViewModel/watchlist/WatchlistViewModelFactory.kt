@@ -1,4 +1,4 @@
-package com.example.chand.ViewModel
+package com.example.chand.ViewModel.watchlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

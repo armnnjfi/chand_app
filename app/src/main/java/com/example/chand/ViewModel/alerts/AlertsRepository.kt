@@ -1,19 +1,20 @@
-package com.example.chand.ViewModel
+package com.example.chand.ViewModel.alerts
 
 import androidx.lifecycle.LiveData
+import com.example.chand.DataBase.AlertEntity
 import com.example.chand.DataBase.CurrencyDao
 import com.example.chand.DataBase.watchlist.WatchlistItemEntity
 
-class WatchlistRepository(private val dao: CurrencyDao) { // نام DAO به CurrencyDao تغییر کرد
+class AlertsRepository(private val dao: CurrencyDao) {
 
     val allItems: LiveData<List<WatchlistItemEntity>> = dao.getAllWatchlistItems()
 
-    suspend fun insert(item: WatchlistItemEntity) {
-        dao.insertWatchlistItem(item)
+    suspend fun insert(item: AlertEntity) {
+        dao.insertAlert(item)
     }
 
-    suspend fun delete(item: WatchlistItemEntity) {
-        dao.deleteWatchlistItem(item)
+    suspend fun delete(id:Int) {
+        dao.deleteAlert(id)
     }
 
     suspend fun updatePriceAndChangePercent(symbol: String, price: String?, changePercent: Double?) {

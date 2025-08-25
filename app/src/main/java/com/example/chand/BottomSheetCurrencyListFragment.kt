@@ -18,9 +18,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import androidx.fragment.app.activityViewModels
 import com.example.chand.DataBase.ChandDatabase
-import com.example.chand.ViewModel.WatchlistRepository
-import com.example.chand.ViewModel.WatchlistViewModel
-import com.example.chand.ViewModel.WatchlistViewModelFactory
+import com.example.chand.ViewModel.watchlist.WatchlistRepository
+import com.example.chand.ViewModel.watchlist.WatchlistViewModel
+import com.example.chand.ViewModel.watchlist.WatchlistViewModelFactory
 import com.example.chand.DataBase.toEntity
 import com.example.retrofit_exersice.utils.Constants
 

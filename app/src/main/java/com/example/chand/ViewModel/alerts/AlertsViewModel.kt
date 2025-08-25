@@ -1,10 +1,10 @@
-package com.example.chand.ViewModel
+package com.example.chand.ViewModel.alerts
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chand.DataBase.toEntity
+import com.example.chand.DataBase.AlertEntity
 import com.example.chand.DataBase.watchlist.WatchlistItemEntity
 import com.example.chand.model.PriceItem
 import com.example.chand.model.Response_Currency_Price
@@ -16,25 +16,25 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class WatchlistViewModel(private val repository: WatchlistRepository) : ViewModel() {
+class AlertsViewModel(private val repository: AlertsRepository) : ViewModel() {
 
     private val api by lazy { ApiClient().getClient().create<ApiServices>(ApiServices::class.java) }
 
     val allItems: LiveData<List<WatchlistItemEntity>> = repository.allItems
 
-    fun addToWatchlist(item: WatchlistItemEntity) {
+    fun addToAlertList(item: AlertEntity) {
         viewModelScope.launch {
             repository.insert(item)
         }
     }
 
-    fun removeFromWatchlist(item: WatchlistItemEntity) {
+    fun removeFromAlertList(id: Int) {
         viewModelScope.launch {
-            repository.delete(item)
+            repository.delete(id)
         }
     }
 
-    fun updateWatchlistPrices() {
+    fun updateAlertsPrices() {
         viewModelScope.launch {
             val callApi = api.getCurrencyPrice(Constants.API_KEY)
             callApi.enqueue(object : Callback<Response_Currency_Price> {
@@ -57,12 +57,13 @@ class WatchlistViewModel(private val repository: WatchlistRepository) : ViewMode
 
                             viewModelScope.launch {
                                 priceItems.forEach { priceItem ->
-                                    val entity = priceItem.toEntity()
-                                    repository.updatePriceAndChangePercent(
-                                        entity.symbol,
-                                        entity.price,
-                                        entity.changePercent
+                                    val entity = AlertEntity(
+                                        symbol = priceItem.symbol!!,
+                                        upperLimit = 0.0, // مقدار پیش‌فرض
+                                        lowerLimit = 0.0  // مقدار پیش‌فرض
                                     )
+//                                    repository.insert(entity) // ذخیره تو AlertEntity
+
                                 }
                             }
                         }
@@ -70,7 +71,7 @@ class WatchlistViewModel(private val repository: WatchlistRepository) : ViewMode
                 }
 
                 override fun onFailure(call: Call<Response_Currency_Price?>, t: Throwable) {
-                    Log.e("onFailure", "api Failure")
+                    Log.e("onFailure", "api Failure: ${t.message}")
                 }
             })
         }

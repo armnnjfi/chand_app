@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chand.adapters.WatchlistAdapter
 import com.example.chand.databinding.FragmentHomeBinding
 import com.example.chand.DataBase.ChandDatabase
-import com.example.chand.ViewModel.WatchlistRepository
-import com.example.chand.ViewModel.WatchlistViewModel
-import com.example.chand.ViewModel.WatchlistViewModelFactory
+import com.example.chand.ViewModel.watchlist.WatchlistRepository
+import com.example.chand.ViewModel.watchlist.WatchlistViewModel
+import com.example.chand.ViewModel.watchlist.WatchlistViewModelFactory
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
