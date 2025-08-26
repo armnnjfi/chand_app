@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
             bottomNav.setupWithNavController(navController)
         }
+
+        //  Notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Alert Channel"
             val descriptionText = "Channel for price alerts"

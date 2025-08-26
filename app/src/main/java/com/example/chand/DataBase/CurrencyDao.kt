@@ -36,7 +36,10 @@ interface CurrencyDao {
     suspend fun insertAlert(alert: AlertEntity)
 
     @Query("SELECT * FROM ${Constants.TABLE_ALERT}")
-    fun getAllAlerts(): LiveData<List<AlertEntity>>
+    suspend fun getAllAlertsList(): List<AlertEntity>
+
+    @Query("SELECT * FROM ${Constants.TABLE_ALERT}")
+    fun getAllAlertsLiveData(): LiveData<List<AlertEntity>>
 
     @Query("UPDATE ${Constants.TABLE_ALERT} SET isActive = :isActive WHERE id = :id")
     suspend fun updateAlertStatus(id: Int, isActive: Boolean)
