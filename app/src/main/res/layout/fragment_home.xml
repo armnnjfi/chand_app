@@ -38,23 +38,14 @@
         android:src="@drawable/search_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/settingIcon" />
-    <TextView
-        android:id="@+id/myWatchListText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My Watchlist"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@+id/mainTitle"
-        android:layout_margin="15dp"
-        app:layout_constraintStart_toStartOf="@+id/settingIcon"/>
+
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/myWatchListText"
+            app:layout_constraintTop_toBottomOf="@+id/mainTitle"
             android:layout_marginTop="15dp"
             />
 

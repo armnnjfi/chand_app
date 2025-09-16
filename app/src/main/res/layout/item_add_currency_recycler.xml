@@ -22,21 +22,37 @@
             android:background="@color/blackBlue"
             android:backgroundTint="@color/blackBlue">
 
-            <ImageView
-                android:id="@+id/imgItemAddCurrencyList"
-                android:layout_width="150dp"
-                android:layout_height="0dp"
-                android:src="@drawable/currencies_img"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/imgItemAddCurrencyListCardView"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_centerHorizontal="true"
+                android:elevation="12dp"
+                android:innerRadius="0dp"
+                android:shape="ring"
+                android:thicknessRatio="1.9"
+                app:cardCornerRadius="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textItemAddList"
-                app:layout_constraintBottom_toBottomOf="@id/subTextItemAddList"
-                 />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/imgItemAddCurrencyList"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    app:layout_constraintBottom_toBottomOf="@id/subTextItemAddList"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/textItemAddList" />
+            </androidx.cardview.widget.CardView>
+
 
             <TextView
                 android:id="@+id/textItemAddList"
                 android:layout_width="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -46,14 +62,14 @@
                 tools:text="Title" />
 
             <TextView
-                app:layout_constraintEnd_toEndOf="@+id/textItemAddList"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:id="@+id/subTextItemAddList"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:textColor="@color/gray"
                 android:gravity="center_vertical"
+                android:textColor="@color/gray"
                 android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/textItemAddList"
                 app:layout_constraintTop_toBottomOf="@+id/textItemAddList"
                 tools:text="subTitle" />
         </androidx.constraintlayout.widget.ConstraintLayout>

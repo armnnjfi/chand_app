@@ -9,13 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.chand.adapters.WatchlistAdapter
-import com.example.chand.databinding.FragmentHomeBinding
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.chand.DataBase.ChandDatabase
 import com.example.chand.ViewModel.watchlist.WatchlistRepository
 import com.example.chand.ViewModel.watchlist.WatchlistViewModel
 import com.example.chand.ViewModel.watchlist.WatchlistViewModelFactory
+import com.example.chand.adapters.WatchlistAdapter
+import com.example.chand.databinding.FragmentHomeBinding
+
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -55,7 +56,7 @@ class HomeFragment : Fragment() {
 
         // تنظیم RecyclerView
         binding.apply {
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            recyclerView.setLayoutManager(GridLayoutManager(context, 2))
             recyclerView.adapter = watchlistAdapter
 
             addNewCurrencyBtn.setOnClickListener {

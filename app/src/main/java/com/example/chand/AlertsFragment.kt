@@ -8,17 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.chand.DataBase.ChandDatabase
 import com.example.chand.ViewModel.alerts.AlertsRepository
 import com.example.chand.ViewModel.alerts.AlertsViewModel
 import com.example.chand.ViewModel.alerts.AlertsViewModelFactory
 import com.example.chand.databinding.FragmentAlertsBinding
-import java.util.concurrent.TimeUnit
 
 class AlertsFragment : Fragment() {
 
@@ -53,27 +47,9 @@ class AlertsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         loadAlerts()
-        schedulePriceCheck()
         binding.addAlertButton.setOnClickListener {
             findNavController().navigate(R.id.action_alertsFragment_to_addAlertFragment)
         }
-    }
-
-    private fun schedulePriceCheck() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val request = PeriodicWorkRequestBuilder<PriceCheckWorker>(
-            15,
-            TimeUnit.MINUTES
-        ).setConstraints(constraints).build()
-
-        WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
-            "price_check_work",
-            ExistingPeriodicWorkPolicy.KEEP,
-            request
-        )
     }
 
     private fun setupRecyclerView() {
