@@ -22,6 +22,7 @@ import com.example.chand.DataBase.toPriceItem
 import com.example.chand.ViewModel.watchlist.WatchlistRepository
 import com.example.chand.ViewModel.watchlist.WatchlistViewModel
 import com.example.chand.ViewModel.watchlist.WatchlistViewModelFactory
+import com.example.chand.adapters.CurrencySpinnerAdapter
 import com.example.retrofit_exersice.utils.Constants
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -82,9 +83,11 @@ class ConverterFragment : Fragment() {
                 if (response.isSuccessful) {
                     response.body()?.let { itBody ->
                         priceItems = mutableListOf<PriceItem>().apply {
-                            itBody.currency?.filterNotNull()?.forEach { add(PriceItem.CurrencyItem(it)) }
+                            itBody.currency?.filterNotNull()
+                                ?.forEach { add(PriceItem.CurrencyItem(it)) }
                             itBody.gold?.filterNotNull()?.forEach { add(PriceItem.GoldItem(it)) }
-                            itBody.cryptocurrency?.filterNotNull()?.forEach { add(PriceItem.CryptocurrencyItem(it)) }
+                            itBody.cryptocurrency?.filterNotNull()
+                                ?.forEach { add(PriceItem.CryptocurrencyItem(it)) }
                             add(PriceItem.TomanItem)
                         }
 
@@ -145,11 +148,7 @@ class ConverterFragment : Fragment() {
         if (!isAdded) return
 
         val currencyNames = priceItems.map { it.name ?: it.nameEn ?: it.symbol ?: "Unknown" }
-        val adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.item_spinner_converter,
-            currencyNames
-        ).apply {
+        val adapter = CurrencySpinnerAdapter(priceItems, requireContext()).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         binding.fromCurrencySpinner.adapter = adapter
@@ -198,15 +197,9 @@ class ConverterFragment : Fragment() {
         }
 
         val fromAmount = fromAmountText.toDoubleOrNull() ?: return
-        val fromCurrencyName = binding.fromCurrencySpinner.selectedItem?.toString() ?: ""
-        val toCurrencyName = binding.toCurrencySpinner.selectedItem?.toString() ?: ""
 
-        val fromPriceItem = priceItems.find {
-            (it.name ?: it.nameEn ?: it.symbol) == fromCurrencyName
-        }
-        val toPriceItem = priceItems.find {
-            (it.name ?: it.nameEn ?: it.symbol) == toCurrencyName
-        }
+        val fromPriceItem = binding.fromCurrencySpinner.selectedItem as? PriceItem
+        val toPriceItem   = binding.toCurrencySpinner.selectedItem as? PriceItem
 
         if (fromPriceItem != null && toPriceItem != null) {
             val fromPrice = fromPriceItem.price?.toDoubleOrNull() ?: 1.0
@@ -217,4 +210,5 @@ class ConverterFragment : Fragment() {
             binding.toAmount.setText("")
         }
     }
+
 }

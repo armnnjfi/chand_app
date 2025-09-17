@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- رنگ پس‌زمینه نیمه‌شفاف مثل قبلی -->
+    <solid android:color="#4D3D3E40" />
+
+    <!-- گوشه‌های گرد -->
+    <corners android:radius="36dp" />
+</shape>
