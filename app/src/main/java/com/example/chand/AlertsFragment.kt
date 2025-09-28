@@ -50,6 +50,9 @@ class AlertsFragment : Fragment() {
         binding.addAlertButton.setOnClickListener {
             findNavController().navigate(R.id.action_alertsFragment_to_addAlertFragment)
         }
+        binding.arrowBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun setupRecyclerView() {

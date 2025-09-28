@@ -17,12 +17,11 @@ class CurrencySpinnerAdapter(
 ) : ArrayAdapter<PriceItem>(context, 0, items) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // ✅ View انتخاب‌شده بالای Spinner → سایز بزرگ‌تر
+
         return createItemView(position, convertView, parent, isSelectedView = true)
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // ✅ آیتم‌های لیست Dropdown → سایز معمولی
         return createItemView(position, convertView, parent, isSelectedView = false)
     }
 

@@ -18,8 +18,7 @@ class AlertsAdapter(private val onDeleteClick: (AlertEntity) -> Unit) : Recycler
             binding.apply {
 
                 nameCurrency.text = item.symbol
-                maxPrice.text = item.upperLimit.toString()
-                minPrice.text=item.lowerLimit.toString()
+                priceRange.text = "Ceiling:${item.upperLimit} | Floor: ${item.lowerLimit}"
 
                 deleteButton.setOnClickListener {
                     onDeleteClick(item)
