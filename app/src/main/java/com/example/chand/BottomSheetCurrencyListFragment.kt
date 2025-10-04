@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chand.adapters.AddCurrencyListAdapter
 import com.example.chand.databinding.FragmentAddCurrencyListBinding
@@ -27,16 +28,18 @@ import com.example.retrofit_exersice.utils.Constants
 class BottomSheetCurrencyListFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentAddCurrencyListBinding
-    //api
+
+    // API
     private val api by lazy { ApiClient().getClient().create<ApiServices>(ApiServices::class.java) }
 
-    //viewModel
+    // ViewModel
     private val viewModel: WatchlistViewModel by activityViewModels {
         WatchlistViewModelFactory(
             WatchlistRepository(ChandDatabase.getDatabase(requireContext()).dao())
         )
     }
-    //adapter
+
+    // Adapter
     private val addCurrencyAdapter by lazy {
         AddCurrencyListAdapter { priceItem ->
             val entity = priceItem.toEntity()
@@ -45,10 +48,10 @@ class BottomSheetCurrencyListFragment : BottomSheetDialogFragment() {
         }
     }
 
+    private var fullList: List<PriceItem> = emptyList() // برای سرچ لحظه‌ای
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddCurrencyListBinding.inflate(inflater, container, false)
         return binding.root
@@ -57,60 +60,68 @@ class BottomSheetCurrencyListFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.apply {
-            val callApi = api.getCurrencyPrice(Constants.API_KEY)
-            callApi.enqueue(object : Callback<Response_Currency_Price> {
+            addCurrencyList.adapter = addCurrencyAdapter
+            addCurrencyList.layoutManager = LinearLayoutManager(requireContext())
+
+            // فراخوانی API
+            api.getCurrencyPrice(Constants.API_KEY).enqueue(object : Callback<Response_Currency_Price> {
                 override fun onResponse(
-                    call: Call<Response_Currency_Price?>,
-                    response: Response<Response_Currency_Price?>
+                    call: Call<Response_Currency_Price>,
+                    response: Response<Response_Currency_Price>
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let { itBody ->
 
-
                             val priceItems = mutableListOf<PriceItem>()
 
-                            // Currency
                             itBody.currency?.filterNotNull()?.forEach { currency ->
                                 priceItems.add(PriceItem.CurrencyItem(currency))
                             }
 
-                            // Gold
-                            itBody.gold?.filterNotNull()?.forEach { gold->
-                                priceItems.add(
-                                    PriceItem.GoldItem(gold)
-                                )
+                            itBody.gold?.filterNotNull()?.forEach { gold ->
+                                priceItems.add(PriceItem.GoldItem(gold))
                             }
 
-                            // Crypto
-                            itBody.cryptocurrency?.filterNotNull()?.forEach {crypto ->
+                            itBody.cryptocurrency?.filterNotNull()?.forEach { crypto ->
                                 priceItems.add(PriceItem.CryptocurrencyItem(crypto))
                             }
 
-                            addCurrencyAdapter.differ.submitList(priceItems)
-
-                            addCurrencyList.adapter = addCurrencyAdapter
-                            addCurrencyList.layoutManager = LinearLayoutManager(requireContext())
+                            fullList = priceItems.toList() // ذخیره لیست کامل برای سرچ
+                            addCurrencyAdapter.differ.submitList(fullList)
                         }
                     }
                 }
-                override fun onFailure(
-                    call: Call<Response_Currency_Price?>,
-                    response: Throwable
-                ) {
-                    Log.e("onFailure","Err : ${response.message}")
+
+                override fun onFailure(call: Call<Response_Currency_Price>, t: Throwable) {
+                    Log.e("onFailure", "Err : ${t.message}")
                 }
             })
-        }
 
+            // سرچ لحظه‌ای
+            searchEdt.addTextChangedListener { text ->
+                val query = text?.trim()?.toString() ?: ""
+                val filtered = if (query.isEmpty()) {
+                    fullList
+                } else {
+                    fullList.filter { item ->
+                        when (item) {
+                            is PriceItem.CurrencyItem -> item.currency.name?.contains(query, true) == true
+                            is PriceItem.GoldItem -> item.gold.name?.contains(query, true) == true
+                            is PriceItem.CryptocurrencyItem -> item.cryptocurrency.name?.contains(query, true) == true
+                            else -> false
+                        }
+                    }
+                }
+                addCurrencyAdapter.differ.submitList(filtered)
+            }
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        dialog?.let {
-            val bottomSheet = it.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            bottomSheet?.layoutParams?.height = (resources.displayMetrics.heightPixels * 0.5).toInt()
+        dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { bottomSheet ->
+            bottomSheet.layoutParams.height = (resources.displayMetrics.heightPixels * 0.5).toInt()
         }
     }
 }

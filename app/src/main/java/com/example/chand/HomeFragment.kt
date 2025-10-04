@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.chand.DataBase.ChandDatabase
 import com.example.chand.ViewModel.watchlist.WatchlistRepository
@@ -16,6 +17,10 @@ import com.example.chand.ViewModel.watchlist.WatchlistViewModel
 import com.example.chand.ViewModel.watchlist.WatchlistViewModelFactory
 import com.example.chand.adapters.WatchlistAdapter
 import com.example.chand.databinding.FragmentHomeBinding
+import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
+import com.example.chand.DataBase.watchlist.WatchlistItemEntity
+import com.example.chand.model.PriceItem
 
 
 class HomeFragment : Fragment() {
@@ -51,28 +56,56 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    private var fullList: List<WatchlistItemEntity> = emptyList()
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // تنظیم RecyclerView
         binding.apply {
-            recyclerView.setLayoutManager(GridLayoutManager(context, 2))
+            recyclerView.layoutManager = GridLayoutManager(context, 2)
             recyclerView.adapter = watchlistAdapter
 
             addNewCurrencyBtn.setOnClickListener {
                 val bottomSheet = BottomSheetCurrencyListFragment()
                 bottomSheet.show(childFragmentManager, "BottomSheetCurrencyList")
             }
+
+            settingIcon.setOnClickListener {
+                findNavController().navigate(R.id.settingsFragment)
+            }
+
+            searchIcon.setOnClickListener {
+                searchBar.visibility = if (searchBar.isVisible) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+            }
+
+            // searchBar text listener
+            searchBar.addTextChangedListener { text ->
+                val query = text?.trim()?.toString() ?: ""
+                val filtered = if (query.isEmpty()) {
+                    fullList
+                } else {
+                    fullList.filter { item ->
+                        item.name?.contains(query, ignoreCase = true) == true // فیلد name رو با چیزی که واقعا داری جایگزین کن
+                    }
+                }
+                watchlistAdapter.differ.submitList(filtered)
+            }
+
         }
 
-        // مشاهده تغییرات LiveData
         viewModel.allItems.observe(viewLifecycleOwner) { items ->
+            fullList = items
             watchlistAdapter.differ.submitList(items)
         }
 
-        // شروع آپدیت دوره‌ای
         handler.post(updateRunnable)
     }
+
 
     override fun onPause() {
         super.onPause()
