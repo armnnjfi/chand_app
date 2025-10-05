@@ -1,17 +1,14 @@
 package com.example.chand.DataBase
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.chand.DataBase.watchlist.WatchlistItemEntity
 import com.example.retrofit_exersice.utils.Constants
 
 @Dao
 interface CurrencyDao {
-    // Watchlist
+
+    // ===== Watchlist =====
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWatchlistItem(item: WatchlistItemEntity)
 
@@ -24,14 +21,14 @@ interface CurrencyDao {
     @Query("UPDATE ${Constants.TABLE_NAME} SET price = :price, changePercent = :changePercent WHERE symbol = :symbol")
     suspend fun updateWatchlistPriceAndChangePercent(symbol: String, price: String?, changePercent: Double?)
 
-    // Converter
+    // ===== Converter =====
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConverterPrices(prices: List<ConverterPriceEntity>)
 
     @Query("SELECT * FROM ${Constants.TABLE_CONVERTER}")
     suspend fun getAllConverterPrices(): List<ConverterPriceEntity>
 
-    // متدهای Alerts
+    // ===== Alerts =====
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlert(alert: AlertEntity)
 
@@ -44,6 +41,6 @@ interface CurrencyDao {
     @Query("UPDATE ${Constants.TABLE_ALERT} SET isActive = :isActive WHERE id = :id")
     suspend fun updateAlertStatus(id: Int, isActive: Boolean)
 
-    @Query("Delete From ${Constants.TABLE_ALERT} WHERE id = :id")
+    @Query("DELETE FROM ${Constants.TABLE_ALERT} WHERE id = :id")
     suspend fun deleteAlert(id: Int)
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blackBlue"
+    android:background="?attr/Background"
     tools:context=".HomeFragment">
 
     <ImageButton
@@ -14,17 +14,18 @@
         android:layout_margin="15dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/setting_icon"
-        android:backgroundTint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="?attr/text"
+        app:tint="?attr/text" />
 
     <TextView
         android:id="@+id/mainTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Real-time Currency Prices"
-        android:textColor="@color/white"
         android:textSize="20dp"
+        android:textColor="?attr/text"
         app:layout_constraintEnd_toStartOf="@+id/searchIcon"
         app:layout_constraintStart_toEndOf="@+id/settingIcon"
         app:layout_constraintTop_toTopOf="@+id/settingIcon" />
@@ -35,8 +36,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
         android:src="@drawable/search_icon"
+        android:backgroundTint="?attr/text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/settingIcon" />
+        app:layout_constraintTop_toTopOf="@+id/settingIcon"
+        app:tint="?attr/text" />
 
     <EditText
         android:id="@+id/search_bar"

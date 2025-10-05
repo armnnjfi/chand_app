@@ -27,7 +27,7 @@
         app:itemIconTint="@color/menu_item_colors"
         app:itemTextAppearanceActiveBoldEnabled="true"
         app:menu="@menu/menu_main"
-        app:itemTextColor="@color/white"
+        app:itemTextColor="?attr/text"
         app:itemActiveIndicatorStyle="@null"
         app:itemRippleColor="@null"
         app:layout_constraintBottom_toBottomOf="parent"

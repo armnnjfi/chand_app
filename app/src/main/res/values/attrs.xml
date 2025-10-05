@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="Background" format="color" />
+    <attr name="text" format="color" />
+    <attr name="item" format="color" />
+    <attr name="watchListItem" format="color" />
+
+    <attr name="bottomNavCenter" format="color" />
+    <attr name="bottomNavEnd" format="color" />
+</resources>

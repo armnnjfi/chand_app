@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/blackBlue"
-    android:backgroundTint="@color/blackBlue">
+    android:background="?attr/Background"
+    android:backgroundTint="?attr/Background">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:backgroundTint="@color/blackBlue"
+        android:backgroundTint="?attr/Background"
         app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,8 +19,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/blackBlue"
-            android:backgroundTint="@color/blackBlue">
+            android:background="?attr/Background"
+            android:backgroundTint="?attr/Background">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/imgItemAddCurrencyListCardView"
@@ -54,7 +54,7 @@
                 android:layout_height="0dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="center_vertical"
-                android:textColor="@color/white"
+                android:textColor="?attr/text"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toTopOf="@+id/subTextItemAddList"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:gravity="center_vertical"
-                android:textColor="@color/gray"
+                android:textColor="?attr/watchListItem"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/textItemAddList"

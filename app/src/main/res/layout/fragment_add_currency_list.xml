@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blackBlue"
+    android:background="?attr/Background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/searchInput"
@@ -16,7 +16,7 @@
         app:boxStrokeWidthFocused="0dp"
         app:boxStrokeWidth="0dp"
         app:cursorColor="@color/gray"
-        app:startIconTint="@color/light_gray"
+        app:startIconTint="?attr/watchListItem"
         app:hintEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -27,6 +27,7 @@
             android:paddingStart="40dp"
             android:paddingTop="0dp"
             android:paddingBottom="0dp"
+            android:textColor="?attr/watchListItem"
             android:background="@drawable/shape_search_box"
             android:gravity="center_vertical"
             android:singleLine="true"

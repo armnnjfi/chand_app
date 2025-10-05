@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blackBlue"
+    android:background="?attr/Background"
     android:padding="16dp">
 
     <LinearLayout
@@ -53,7 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Default currency unit"
-                    android:textColor="@android:color/white"
+                    android:textColor="?attr/text"
                     android:textSize="16sp" />
 
                 <TextView
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Number display format"
-                    android:textColor="@android:color/white"
+                    android:textColor="?attr/text"
                     android:textSize="16sp" />
 
                 <TextView
@@ -123,8 +123,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="App theme"
-                android:textColor="@android:color/white"
+                android:text="Dark theme"
+                android:textColor="?attr/text"
                 android:textSize="16sp" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -160,7 +160,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Alerts"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/text"
                 android:textSize="16sp" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -203,13 +203,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Currency Converter"
-                    android:textColor="@android:color/white"
+                    android:textColor="?attr/text"
                     android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Version 1.2.3"
+                    android:text="Version 1.0.0"
                     android:textColor="#B0B0B0"
                     android:textSize="14sp" />
             </LinearLayout>

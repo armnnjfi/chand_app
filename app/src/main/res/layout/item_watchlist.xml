@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="190dp"
         android:layout_height="130dp"
-        android:backgroundTint="@color/blackBlue"
+        android:backgroundTint="?attr/item"
         app:cardCornerRadius="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="8dp"
                 android:text="Symbol"
-                android:textColor="@color/white"
+                android:textColor="?attr/text"
                 android:textSize="19sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="Name"
-                android:textColor="@color/gray"
+                android:textColor="?attr/watchListItem"
                 android:textSize="17sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/symbolTextView" />
@@ -74,7 +74,7 @@
                 android:paddingStart="5dp"
                 android:text="Price"
                 android:layout_marginHorizontal="5dp"
-                android:textColor="@color/white"
+                android:textColor="?attr/text"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -87,6 +87,7 @@
                 android:layout_marginHorizontal="5dp"
                 android:gravity="center_vertical"
                 android:text="Unit"
+                android:textColor="?attr/watchListItem"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@id/priceTextView"
                 app:layout_constraintStart_toEndOf="@id/priceTextView"
@@ -101,15 +102,6 @@
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/priceTextView" />
-
-<!--            <ImageButton-->
-<!--                android:id="@+id/deleteButton"-->
-<!--                android:layout_width="24dp"-->
-<!--                android:layout_height="24dp"-->
-<!--                android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--                android:src="@android:drawable/ic_delete"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

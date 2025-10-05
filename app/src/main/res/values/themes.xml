@@ -1,9 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Chand" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Theme.Chand" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Light Theme Customizations -->
+        <item name="Background">@color/white</item> <!-- برای لایت -->
+        <item name="text">@color/black</item>
+        <item name="item">@color/lightBlue</item>
+        <item name="watchListItem">@color/LightSilver</item>
+        <item name="bottomNavCenter">#FFFFFF</item>
+        <item name="bottomNavEnd">#FFFFFF</item>
     </style>
 
-    <style name="Theme.Chand" parent="Base.Theme.Chand" />
 </resources>
